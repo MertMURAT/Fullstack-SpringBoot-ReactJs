@@ -2,10 +2,9 @@ package com.mert.imageliteapi.application.images;
 
 import com.mert.imageliteapi.domain.entity.Image;
 import com.mert.imageliteapi.domain.enums.ImageExtension;
+import com.mert.imageliteapi.domain.service.ImageService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,6 +26,7 @@ import java.util.Objects;
 public class ImagesController {
 
     private final ImageService imageService;
+    private final ImageMapper imageMapper;
 
     @PostMapping
     public ResponseEntity save(
@@ -38,14 +40,21 @@ public class ImagesController {
         log.info("Name defined for the image : {}", name);
         log.info("Tags : {}", tags);
 
-        Image image = Image.builder()
-                .name(name)
-                .tags(String.join(",", tags))
-                .size(file.getSize())
-                .extension(ImageExtension.valueOf(MediaType.valueOf(file.getContentType())))
-                .file(file.getBytes())
-                .build();
-        imageService.save(image);
-        return ResponseEntity.ok().build();
+        Image image = imageMapper.mapToImage(file, name, tags);
+        Image savedImage = imageService.save(image);
+        URI imageUri = buildImageURL(savedImage);
+
+        return ResponseEntity.created(imageUri).build();
     }
+
+    // localhost:8080/v1/images/asfsagags
+    private URI buildImageURL(Image image) {
+        String imagePath = "/" + image.getId();
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path(imagePath)
+                .build().toUri();
+    }
+
+
 }

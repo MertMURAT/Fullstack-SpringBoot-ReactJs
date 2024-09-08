@@ -2,6 +2,7 @@ package com.mert.imageliteapi.application.images;
 
 import com.mert.imageliteapi.base.repository.ImageRepository;
 import com.mert.imageliteapi.domain.entity.Image;
+import com.mert.imageliteapi.domain.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @Transactional
-    public void save(Image image) {
-        imageRepository.save(image);
+    public Image save(Image image) {
+        return imageRepository.save(image);
     }
 }

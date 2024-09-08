@@ -1,7 +1,7 @@
-package com.mert.imageliteapi.application.images;
+package com.mert.imageliteapi.domain.service;
 
 import com.mert.imageliteapi.domain.entity.Image;
 
 public interface ImageService {
-    public void save(Image image);
+    Image save(Image image);
 }
