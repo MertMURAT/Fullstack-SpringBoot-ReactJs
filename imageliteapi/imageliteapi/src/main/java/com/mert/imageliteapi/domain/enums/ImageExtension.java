@@ -1,15 +1,17 @@
 package com.mert.imageliteapi.domain.enums;
 
+import lombok.Getter;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 
+@Getter
 public enum ImageExtension {
     PNG(MediaType.IMAGE_PNG),
     JPEG(MediaType.IMAGE_JPEG),
     GIF(MediaType.IMAGE_GIF);
 
-    private MediaType mediaType;
+    private final MediaType mediaType;
 
     ImageExtension(MediaType mediaType) {
         this.mediaType = mediaType;
