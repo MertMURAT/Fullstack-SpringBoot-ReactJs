@@ -18,6 +18,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/images")
@@ -25,8 +26,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ImagesController {
 
-    private final ImageService imageService;
     private final ImageMapper imageMapper;
+    private final ImageService imageService;
 
     @PostMapping
     public ResponseEntity save(
@@ -50,10 +51,9 @@ public class ImagesController {
     @GetMapping("{id}")
     public ResponseEntity<byte[]> getImage(@PathVariable("id") String id) {
         var possibleImage = imageService.getById(id);
-        if(possibleImage.isEmpty()){
+        if (possibleImage.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-
         Image image = possibleImage.get();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(image.getExtension().getMediaType());
@@ -64,6 +64,22 @@ public class ImagesController {
         return new ResponseEntity<>(image.getFile(), headers, HttpStatus.OK);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ImageDTO>> search(
+            @RequestParam(value = "extension", required = false, defaultValue = "") ImageExtension extension,
+            @RequestParam(value = "query", required = false) String query
+    ) {
+        var result = imageService.search(extension, query);
+        var images = result.stream()
+                .map(image ->
+                {
+                    var url = buildImageURL(image);
+                    return imageMapper.ImageToDTO(image, url.toString());
+                }).toList();
+
+        return ResponseEntity.ok(images);
+    }
+
     // localhost:8080/v1/images/asfsagags
     private URI buildImageURL(Image image) {
         String imagePath = "/" + image.getId();
@@ -72,6 +88,4 @@ public class ImagesController {
                 .path(imagePath)
                 .build().toUri();
     }
-
-
 }
