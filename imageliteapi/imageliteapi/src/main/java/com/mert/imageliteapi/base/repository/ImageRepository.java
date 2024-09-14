@@ -1,5 +1,6 @@
 package com.mert.imageliteapi.base.repository;
 
+import com.mert.imageliteapi.base.repository.specification.GenericSpecs;
 import com.mert.imageliteapi.domain.entity.Image;
 import com.mert.imageliteapi.domain.enums.ImageExtension;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,6 +11,10 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
+import static com.mert.imageliteapi.base.repository.specification.GenericSpecs.*;
+import static com.mert.imageliteapi.base.repository.specification.ImageSpecification.*;
+import static org.springframework.data.jpa.domain.Specification.*;
+
 @Repository
 public interface ImageRepository extends JpaRepository<Image, String>, JpaSpecificationExecutor<Image> {
 
@@ -19,22 +24,14 @@ public interface ImageRepository extends JpaRepository<Image, String>, JpaSpecif
      * @return SELECT * FROM IMAGE WHERE 1=1 AND EXTENSION 'PNG' AND (NAME LIKE 'QUERY' OR TAGS LIKE 'QUERY')
      */
     default List<Image> findByExtensionAndNameOrTagsLike(ImageExtension extension, String query) {
-        Specification<Image> conjunction = (root, q, criteriaBuilder) -> criteriaBuilder.conjunction();
-        Specification<Image> spec = Specification.where(conjunction);
-
+        Specification<Image> spec = where(conjunction());
         if (extension != null) {
-            Specification<Image> extensionEqual = (root, q, cb) -> cb.equal(root.get("extension"), extension);
-            spec = spec.and(extensionEqual);
+            spec = spec.and(extensionEqual(extension));
         }
         // query != null kullanmamızın sebebi, query'nin boş olabileceği durumda tüm kayıtları getirmesini engellemek
         if (StringUtils.hasText(query)) {
-            Specification<Image> nameLike = (root, q, cb) -> cb.like(cb.upper(root.get("name")),"%" + query.toUpperCase() + "%");
-            Specification<Image> tagsLike = (root, q, cb) -> cb.like(cb.upper(root.get("tags")), "%" + query.toUpperCase() + "%");
-
-            Specification<Image> nameOrTagsLike = Specification.anyOf(nameLike, tagsLike);
-            spec = spec.and(nameOrTagsLike);
+            spec = spec.and(anyOf(nameLike(query), tagsLike(query)));
         }
-
         return findAll(spec);
     }
 }
