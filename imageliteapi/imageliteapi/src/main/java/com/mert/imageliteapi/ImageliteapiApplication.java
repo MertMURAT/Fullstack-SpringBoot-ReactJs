@@ -18,16 +18,16 @@ public class ImageliteapiApplication {
 		SpringApplication.run(ImageliteapiApplication.class, args);
 	}
 
-	@Bean
-	public CommandLineRunner commandLineRunner(@Autowired ImageRepository imageRepository) {
-		return args -> {
-			Image image = Image.builder()
-					.name("image")
-					.size(100L)
-					.extension(ImageExtension.PNG)
-					.tags("tag1, tag2")
-					.build();
-			imageRepository.save(image);
-		};
-	}
+//	@Bean
+//	public CommandLineRunner commandLineRunner(@Autowired ImageRepository imageRepository) {
+//		return args -> {
+//			Image image = Image.builder()
+//					.name("image")
+//					.size(100L)
+//					.extension(ImageExtension.PNG)
+//					.tags("tag1, tag2")
+//					.build();
+//			imageRepository.save(image);
+//		};
+//	}
 }

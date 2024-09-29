@@ -25,6 +25,7 @@ public class ImageMapper {
 
     public ImageDTO ImageToDTO(Image image, String url) {
         return ImageDTO.builder()
+                .id(image.getId())
                 .url(url)
                 .extension(image.getExtension().name())
                 .name(image.getName())
