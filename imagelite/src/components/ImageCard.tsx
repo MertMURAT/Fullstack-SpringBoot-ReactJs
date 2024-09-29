@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image"
 
 interface ImageCardProps {
@@ -10,13 +11,20 @@ interface ImageCardProps {
 export const ImageCard: React.FC<ImageCardProps> = ({
     name, dataUpload, src, size
 }: ImageCardProps) => {
+
+    function download() {
+        window.open(src, '_blank');
+    }
+
     return (
-        <div className="card relative bg-white rounded-md shadow-md transition-transform ease-in duration-300 transform hover:shadow-lg hover:-translate-y-2">
+        <div
+            className="card relative bg-white rounded-md shadow-md transition-transform ease-in duration-300 transform hover:shadow-lg hover:-translate-y-2">
             <Image
+                onClick={download}
                 src={src || '/image_not.jpg'}
                 width={1920}
                 height={1080}
-                className="h-56 w-full object-cover rounded-t-md"
+                className="h-56 w-full object-cover rounded-t-md cursor-pointer"
                 alt=""
             />
             <div className="card-body p-4">
