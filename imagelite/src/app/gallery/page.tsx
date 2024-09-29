@@ -25,7 +25,9 @@ export default function GalleryPages() {
                     src={image.url}
                     name={image.name}
                     size={image.size}
-                    dataUpload={image.uploadDate} />
+                    extension={image.extension}
+                    dataUpload={image.uploadDate}
+                />
             </div>
         );
     }
