@@ -5,11 +5,14 @@ import { useImageService } from "@/resources/image/image.service";
 import { useState } from "react";
 
 export default function GalleryPages() {
-    const [images, setImages] = useState<Image[]>([]);
     const userService = useImageService();
+    const [images, setImages] = useState<Image[]>([]);
+    const [query, setQuery] = useState<string>('');
+    const [extension, setExtension] = useState<string>('');
 
     async function searchImages() {
-        const result = await userService.search();
+        console.log("Value digits : ", query);
+        const result = await userService.search(query, extension);
         setImages(result);
         console.table(result);
         console.table("IMAGES : " + images);
@@ -36,9 +39,16 @@ export default function GalleryPages() {
         <Template>
             <section className="flex flex-col items-center justify-center my-5">
                 <div className="flex space-x-4">
-                    <input type="text" className="border px-3 py-2 rounded-lg text-gray-900" />
-                    <select className="border px-4 py-2 rounded-lg text-gray-900">
-                        <option>All formats</option>
+                    <input
+                        onChange={event => setQuery(event.target.value)}
+                        type="text" className="border px-3 py-2 rounded-lg text-gray-900" />
+                    <select
+                        onChange={event => setExtension(event.target.value)}
+                        className="border px-4 py-2 rounded-lg text-gray-900">
+                        <option value="">All formats</option>
+                        <option value="PNG">PNG</option>
+                        <option value="JPEG">JPEG</option>
+                        <option value="GIF">GIF</option>
                     </select>
                     <button
                         onClick={searchImages}
